@@ -1,3 +1,59 @@
+import streamlit as st
+import pandas as pd
+import requests
+import joblib
+
+# API ma'lumotlarini olish
+def get_bitcoin_data():
+    url = "https://api.coincap.io/v2/assets/bitcoin"
+    headers = {"Authorization": "Bearer YOUR_API_KEY_HERE"}  # API kalitni shu yerga qo'shing
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()["data"]
+        return {
+            "volumeUsd24Hr": float(data["volumeUsd24Hr"]),
+            "priceUsd": float(data["priceUsd"])
+        }
+    else:
+        st.error("API ma'lumotlarini olishda xatolik yuz berdi!")
+        return None
+
+# Modelni yuklash
+model = joblib.load('bitcoin_model.pkl')
+
+# Interfeys
+st.title("Bitcoin Narxi Bashorati")
+st.write("Kelajakdagi Bitcoin narxini bashorat qiling")
+
+# API orqali ma'lumotlarni olish
+api_data = get_bitcoin_data()
+
+# Foydalanuvchi kiritishi uchun form
+open_price = st.number_input("Open narxi:", min_value=0.0)
+high_price = st.number_input("High narxi:", min_value=0.0)
+low_price = st.number_input("Low narxi:", min_value=0.0)
+close_price = st.number_input("Close narxi:", min_value=0.0)
+volume = st.number_input("Volume:", min_value=0.0, value=api_data["volumeUsd24Hr"] if api_data else 0.0)
+
+# Bashorat qilish
+if st.button("Bashorat qilish"):
+    input_data = pd.DataFrame({
+        'Open': [open_price],
+        'High': [high_price],
+        'Low': [low_price],
+        'Close': [close_price],
+        'Volume': [volume]
+    })
+    prediction = model.predict(input_data)[0]
+    st.write(f"Kelajakdagi narx: ${prediction:.2f}")
+
+    # Joriy narxni ko'rsatish
+    if api_data:
+        st.write(f"Joriy narx (priceUsd): ${api_data['priceUsd']:.2f}")
+
+
+
+
 # import streamlit as st
 # import pandas as pd
 # import requests
@@ -109,33 +165,35 @@
 
 
 
+# ishlaydigan kod
 
-import streamlit as st
-import pandas as pd
-import joblib
 
-# Modelni yuklash
-model = joblib.load('bitcoin_model.pkl')
+# import streamlit as st
+# import pandas as pd
+# import joblib
 
-# Interfeys
-st.title("Bitcoin Narxi Bashorati")
-st.write("Kelajakdagi Bitcoin narxini bashorat qiling")
+# # Modelni yuklash
+# model = joblib.load('bitcoin_model.pkl')
 
-# Foydalanuvchi kiritishi uchun form
-open_price = st.number_input("Open narxi:", min_value=0.0)
-high_price = st.number_input("High narxi:", min_value=0.0)
-low_price = st.number_input("Low narxi:", min_value=0.0)
-close_price = st.number_input("Close narxi:", min_value=0.0)
-volume = st.number_input("Volume:", min_value=0.0)
+# # Interfeys
+# st.title("Bitcoin Narxi Bashorati")
+# st.write("Kelajakdagi Bitcoin narxini bashorat qiling")
 
-# Bashorat qilish
-if st.button("Bashorat qilish"):
-    input_data = pd.DataFrame({
-        'Open': [open_price],
-        'High': [high_price],
-        'Low': [low_price],
-        'Close': [close_price],
-        'Volume': [volume]
-    })
-    prediction = model.predict(input_data)[0]
-    st.write(f"Kelajakdagi narx: ${prediction:.2f}")
+# # Foydalanuvchi kiritishi uchun form
+# open_price = st.number_input("Open narxi:", min_value=0.0)
+# high_price = st.number_input("High narxi:", min_value=0.0)
+# low_price = st.number_input("Low narxi:", min_value=0.0)
+# close_price = st.number_input("Close narxi:", min_value=0.0)
+# volume = st.number_input("Volume:", min_value=0.0)
+
+# # Bashorat qilish
+# if st.button("Bashorat qilish"):
+#     input_data = pd.DataFrame({
+#         'Open': [open_price],
+#         'High': [high_price],
+#         'Low': [low_price],
+#         'Close': [close_price],
+#         'Volume': [volume]
+#     })
+#     prediction = model.predict(input_data)[0]
+#     st.write(f"Kelajakdagi narx: ${prediction:.2f}")
