@@ -12,7 +12,6 @@ def get_bitcoin_data():
         data = response.json()["data"]
         return {
             "open_price": float(data["priceUsd"]),
-            "high_price": float(data["high24Hr"]),
             "low_price": float(data["low24Hr"]),
             "close_price": float(data["priceUsd"]),
             "volume": float(data["volumeUsd24Hr"])
@@ -33,7 +32,7 @@ api_data = get_bitcoin_data()
 
 # Foydalanuvchi kiritishi uchun form
 open_price = st.number_input("Open narxi:", min_value=0.0, value=api_data["open_price"] if api_data else 0.0)
-high_price = st.number_input("High narxi:", min_value=0.0, value=api_data["high_price"] if api_data else 0.0)
+high_price = st.number_input("High narxi:", min_value=0.0)
 low_price = st.number_input("Low narxi:", min_value=0.0, value=api_data["low_price"] if api_data else 0.0)
 close_price = st.number_input("Close narxi:", min_value=0.0, value=api_data["close_price"] if api_data else 0.0)
 volume = st.number_input("Volume:", min_value=0.0, value=api_data["volume"] if api_data else 0.0)
