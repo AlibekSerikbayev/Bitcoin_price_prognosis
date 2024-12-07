@@ -248,7 +248,7 @@ import pandas as pd
 import joblib
 
 # Modelni yuklash
-model = joblib.load('bitcoin_model1.pkl')
+model = joblib.load('bitcoin_model5.pkl')
 
 # Interfeys
 st.title("Bitcoin Narxi Bashorati")
